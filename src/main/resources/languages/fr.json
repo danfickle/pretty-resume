@@ -1,0 +1,8 @@
+{
+ headings: {
+  contact: 'Contact',
+  experience: 'Expériences professionelles',
+  education: 'Formation',
+  skills: 'Compétences'
+ }
+}

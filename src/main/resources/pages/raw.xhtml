@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Pretty Resume Generator - Raw JSON Editor</h1>
+<form method="post" action="/upload">
+  <textarea style="width: 100%; min-height: 70vh;" name="resumejson" th:text="${defaultResume}"></textarea>
+
+
+<h2>Click on a template below to generate your resume!</h2>
+  <div th:each="template : ${templates}">
+    <button type="submit" name="templateslug" th:value="${template.slug}" th:text="${template.toString()}"/> 
+  </div>
+ </form>
+ </body>
+ </html>

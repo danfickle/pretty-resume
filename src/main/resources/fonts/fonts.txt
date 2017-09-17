@@ -1,0 +1,3 @@
+FONTS:
+- Roboto: https://fonts.google.com/specimen/Roboto
+- FontAwesome: http://fontawesome.io/

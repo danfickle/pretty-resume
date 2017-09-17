@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html ng-app="prettyResumeApp">
+<head>
+<title>Pretty Resume Generator (Open Source)</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<script th:utext="'var dataStore = ' + ${defaultResume}"></script>
+<script>
+var prettyResumeApp = angular.module('prettyResumeApp', []);
+
+prettyResumeApp.controller('PrettyResumeController', function PrettyResumeController($scope) {
+  $scope.person = dataStore.person;
+  $scope.lang = dataStore.lang;
+  $scope.template = 'material-blue';
+  
+  $scope.addExperience = function() {
+    $scope.person.experience.push({ company: '', position: '', timeperiod: '', description: ''});
+  };
+  
+  $scope.removeExperience = function(idx) {
+    $scope.person.experience.splice(idx, 1);
+  };
+  
+  $scope.addEducation = function() {
+    $scope.person.education.push({ degree: '', timeperiod: '', description: ''});
+  };
+  
+  $scope.removeEducation = function(idx) {
+    $scope.person.education.splice(idx, 1);
+  };
+  
+  $scope.addSkill = function() {
+    $scope.person.skills.push({ name: '', level: 0 });
+  };
+  
+  $scope.removeSkill = function(idx) {
+    $scope.person.skills.splice(idx, 1);
+  };
+  
+  $scope.getReady = function() {
+    var obj = { person: $scope.person, lang: $scope.lang };
+    var json = angular.toJson(obj, true);
+  
+    document.getElementById('resumejson').value = json;
+    document.getElementById('templateslug').value = $scope.template;
+  };
+  
+  $scope.generate = function() {
+    $scope.getReady();
+    document.getElementById('upload-form').submit();
+  };
+  
+  $scope.showJson = function() {
+    $scope.getReady();
+    document.getElementById('upload-form').style.visibility = 'visible';
+  };
+});
+
+</script>
+<style>
+body {
+  padding: 20px;
+}
+input, select, textarea {
+  width: 100%;
+}
+.my-card {
+  box-shadow: 0 4px 10px 0 rgba(0,0,0,0.2), 0 4px 20px 0 rgba(0,0,0,0.19);
+  margin-top: 20px;
+}
+.my-card .my-card-header {
+  padding: 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+.my-card .my-card-content {
+  padding: 10px;
+}
+.my-card .my-card-content .row {
+  padding-bottom: 10px;
+}
+label {
+ padding-top: 10px;
+}
+</style>
+</head>
+<body ng-controller="PrettyResumeController">
+ <h1>Pretty Resume Generator</h1>
+
+ <div class="my-card">
+  <div class="my-card-header"><h2>Basics</h2></div>
+  <div class="my-card-content">
+   <label for="first-name">First Name</label>
+   <input id="first-name" type="text" placeholder="First Name" ng-model="person.name.first"/>
+ 
+   <label for="last-name">Last Name</label>
+   <input id="last-name" type="text" placeholder="Last Name" ng-model="person.name.last"/>
+
+   <label for="position">Position</label>
+   <input id="position" type="text" placeholder="Position" ng-model="person.position"/>
+
+   <label for="birth-year">Birth Year</label>
+   <input id="birth-year" type="text" placeholder="Birth Year" ng-model="person.birth.year"/>
+
+   <label for="birth-location">Location of Birth</label>
+   <input id="birth-location" type="text" placeholder="Location of Birth" ng-model="person.birth.location"/>
+  </div>
+ </div>
+ 
+ <div class="my-card">
+  <div class="my-card-header"><h2>Contact</h2></div>
+  <div class="my-card-content">
+   <label for="email">Email</label>
+   <input id="email" type="text" placeholder="Email" ng-model="person.contact.email"/>
+ 
+   <label for="phone">Phone</label>
+   <input id="phone" type="text" placeholder="Phone" ng-model="person.contact.phone"/>
+
+   <label for="street">Street</label>
+   <input id="street" type="text" placeholder="Street" ng-model="person.contact.street"/>
+
+   <label for="city">City</label>
+   <input id="city" type="text" placeholder="City" ng-model="person.contact.city"/>
+
+   <label for="website">Website</label>
+   <input id="website" type="text" placeholder="Website" ng-model="person.contact.website"/>
+   
+   <label for="github">Github Username</label>
+   <input id="github" type="text" placeholder="Github Username" ng-model="person.contact.github"/>
+  </div>
+ </div>
+  
+ <div class="my-card">
+  <div class="my-card-header"><h2>Experience</h2></div>
+ 
+  <div class="my-card-content">
+   <div class="row" ng-repeat="ex in person.experience">
+     <div class="col-md-2">
+       <input type="text" placeholder="Company" ng-model="ex.company"/>
+     </div>
+     
+     <div class="col-md-2">
+       <input type="text" placeholder="Position" ng-model="ex.position"/>
+     </div>
+     
+     <div class="col-md-3">
+       <input type="text" placeholder="Time Period" ng-model="ex.timeperiod"/>
+     </div>
+     
+     <div class="col-md-3">
+       <input type="text" placeholder="Description" ng-model="ex.description"/>
+     </div>
+     
+     <div class="col-md-2">
+      <button type="button" class="btn btn-danger" ng-click="removeExperience($index)">X</button>
+     </div>
+   </div>
+   <button type="button" class="btn btn-primary" ng-click="addExperience()">Add</button>
+  </div>  
+   
+ </div>
+
+ <div class="my-card">
+  <div class="my-card-header"><h2>Education</h2></div>
+ 
+  <div class="my-card-content">
+   <div class="row" ng-repeat="ed in person.education">
+     <div class="col-md-3">
+       <input type="text" placeholder="Degree" ng-model="ed.degree"/>
+     </div>
+     
+     <div class="col-md-3">
+       <input type="text" placeholder="Time Period" ng-model="ed.timeperiod"/>
+     </div>
+     
+     <div class="col-md-4">
+       <input type="text" placeholder="Description" ng-model="ed.description"/>
+     </div>
+     
+     <div class="col-md-2">
+      <button type="button" class="btn btn-danger" ng-click="removeEducation($index)">X</button>
+     </div>
+   </div>
+   <button type="button" class="btn btn-primary" ng-click="addEducation()">Add</button>
+  </div>  
+   
+ </div>
+
+
+ <div class="my-card">
+  <div class="my-card-header"><h2>Skills</h2></div>
+ 
+  <div class="my-card-content">
+   <div class="row" ng-repeat="sk in person.skills">
+     <div class="col-md-6">
+       <input type="text" placeholder="Skill Name" ng-model="sk.name"/>
+     </div>
+     
+     <div class="col-md-4">
+       <input type="number" min="0" max="100" step="1" placeholder="Level (0 to 100)" ng-model="sk.level"/>
+     </div>
+     
+     <div class="col-md-2">
+      <button type="button" class="btn btn-danger" ng-click="removeSkill($index)">X</button>
+     </div>
+   </div>
+   <button type="button" class="btn btn-primary" ng-click="addSkill()">Add</button><br/>
+   
+   <label for="skill-description">Extra Skills Description</label>
+   <input id="skill-description" type="text" placeholder="Extra Skills Description" ng-model="person.skillDescription"/>
+  </div>  
+   
+ </div>
+
+ <div class="my-card">
+  <div class="my-card-header"><h2>Generate PDF Resume</h2></div>
+ 
+  <div class="my-card-content">
+   <label for="lang">Language</label>
+   <select id="lang" ng-model="lang">
+     <option th:each="lng : ${languages}" th:value="${lng.slug}" th:text="${lng.toString()}"/>
+   <select>
+
+   <label for="template">Template</label>
+   <select id="template" ng-model="template">
+     <option th:each="tp : ${templates}" th:value="${tp.slug}" th:text="${tp.toString()}"/>
+   <select>
+   <p style="margin-top: 20px;">NOTE: You may wish to copy the generated JSON before generating your PDF, so that if the server is down you can paste in your JSON when the server comes back up!</p>
+   <button type="button" class="btn btn-success" ng-click="generate()" style="margin-top: 20px;">Generate PDF</button>&nbsp;&nbsp;&nbsp;
+   <button type="button" class="btn btn-warning" ng-click="showJson()" style="margin-top: 20px;">Show JSON</button>
+  </div>
+ </div>
+
+<div style="visibility:hidden;">
+<form id="upload-form" action="/upload" method="post">
+ <textarea rows="20" id="resumejson" name="resumejson"></textarea>
+ <input type="hidden" id="templateslug" name="templateslug"/>
+ <input type="submit" value="Generate from JSON"/>
+</form>
+</div>
+<p style="text-align: center;"><a href="https://github.com/danfickle/pretty-resume">Available as open-source software at Github</a></p> 
+</body>
+</html>
