@@ -14,4 +14,4 @@ Generate a pretty resume! Templates based on [salomonelli/best-resume-ever](http
 ````mvn package```` from the directory where you cloned/downloaded the project will generate a fat jar.
 
 ## Try it online
-Coming Soon!
+[Pretty Resume Generator](https://prettyresume.openhtmltopdf.com/)
