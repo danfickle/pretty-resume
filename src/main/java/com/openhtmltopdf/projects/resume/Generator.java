@@ -270,7 +270,7 @@ public class Generator {
 								
 				ByteArrayOutputStream os = new ByteArrayOutputStream();
 				PdfRendererBuilder builder = new PdfRendererBuilder();
-				builder.withHtmlContent(html, Generator.class.getResource("/").toExternalForm());
+				builder.withHtmlContent(html, Generator.class.getResource("/root.htm").toExternalForm());
 				builder.useUriResolver(new UriResolver());
 				builder.toStream(os);
 				builder.run();
