@@ -35,52 +35,6 @@ import com.openhtmltopdf.util.XRLog;
 
 public class Generator {
 	
-	// We can get rid of this once a fix for issue-#125 is released with RC12 of OpenHTMLtoPDF.
-	public static class UriResolver implements FSUriResolver {
-		/**
-		 * Resolves the URI; if absolute, leaves as is, if relative, returns an
-		 * absolute URI based on the baseUrl for the agent.
-		 *
-		 * @param uri
-		 *            A URI, possibly relative.
-		 *
-		 * @return A URI as String, resolved, or null if there was an exception
-		 *         (for example if the URI is malformed).
-		 */
-		@Override
-		public String resolveURI(String baseUri, String uri) {
-			if (uri == null || uri.isEmpty())
-				return null;
-			
-			try {
-				URI possiblyRelative = new URI(uri);
-				
-				if (possiblyRelative.isAbsolute()) {
-					return possiblyRelative.toString();
-				} else {
-				    if(baseUri.startsWith("jar")) {
-				    	// Fix for OpenHTMLtoPDF issue-#125, URI class doesn't resolve jar: scheme urls and so returns only
-				    	// the relative part on calling base.resolve(relative) so we use the URL class instead which does
-				    	// understand jar: scheme urls.
-				    	URL base = new URL(baseUri);
-				        URL absolute = new URL(base, uri);
-				        return absolute.toString();
-				    } else {
-						URI base = new URI(baseUri);
-						URI absolute = base.resolve(uri);
-						return absolute.toString();				    	
-				    }
-				}
-			} catch (URISyntaxException e) {
-				XRLog.exception("When trying to load uri(" + uri + ") with base URI(" + baseUri + "), one or both were invalid URIs.", e);
-				return null;
-			} catch (MalformedURLException e) {
-				XRLog.exception("When trying to load uri(" + uri + ") with base jar scheme URI(" + baseUri + "), one or both were invalid URIs.", e);
-				return null;
-			}
-		}
-	}
-	
 	private static enum Editor {
 		RAW,
 		ANGULARJS1X;
@@ -271,7 +225,6 @@ public class Generator {
 				ByteArrayOutputStream os = new ByteArrayOutputStream();
 				PdfRendererBuilder builder = new PdfRendererBuilder();
 				builder.withHtmlContent(html, Generator.class.getResource("/root.htm").toExternalForm());
-				builder.useUriResolver(new UriResolver());
 				builder.toStream(os);
 				builder.run();
 
