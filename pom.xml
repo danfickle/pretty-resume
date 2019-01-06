@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.openhtmltopdf.projects</groupId>
   <artifactId>prettyresume</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.3-SNAPSHOT</version>
   <name>Pretty Resume Generator</name>
   
   <properties>
