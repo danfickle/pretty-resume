@@ -12,7 +12,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Base64;
 import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
@@ -108,6 +107,16 @@ public class Generator {
 		Stream.of(Template.values()).forEach(Generator::loadTemplate);
 	}
 	
+	private static final String HEXES = "0123456789ABCDEF";
+	private static String getHex( byte [] raw ) {
+	    final StringBuilder hex = new StringBuilder( 2 * raw.length );
+	    for ( final byte b : raw ) {
+	        hex.append(HEXES.charAt((b & 0xF0) >> 4))
+	            .append(HEXES.charAt((b & 0x0F)));
+	    }
+	    return hex.toString();
+	}
+	
 	public static void main(String[] args) throws Exception {
 		Class.forName("org.h2.Driver");
 		
@@ -143,7 +152,7 @@ public class Generator {
 				// Make a security token.
 				byte[] tokenBytes = new byte[20];
 				RANDOM.nextBytes(tokenBytes);
-				String token = Base64.getEncoder().encodeToString(tokenBytes);
+				String token = getHex(tokenBytes);
 				
 				// Insert into db.
 				String sql = "INSERT INTO resumes(id, json, token, ts, template) VALUES(NULL, ?, ?, NOW(), ?)";
