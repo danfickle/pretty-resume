@@ -4,10 +4,6 @@ import static spark.Spark.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
@@ -16,6 +12,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Base64;
 import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
@@ -29,9 +26,8 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;import com.openhtmltopdf.extend.FSUriResolver;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
-import com.openhtmltopdf.util.XRLog;
 
 public class Generator {
 	
@@ -147,7 +143,7 @@ public class Generator {
 				// Make a security token.
 				byte[] tokenBytes = new byte[20];
 				RANDOM.nextBytes(tokenBytes);
-				String token = javax.xml.bind.DatatypeConverter.printHexBinary(tokenBytes);
+				String token = Base64.getEncoder().encodeToString(tokenBytes);
 				
 				// Insert into db.
 				String sql = "INSERT INTO resumes(id, json, token, ts, template) VALUES(NULL, ?, ?, NOW(), ?)";
@@ -225,6 +221,7 @@ public class Generator {
 				ByteArrayOutputStream os = new ByteArrayOutputStream();
 				PdfRendererBuilder builder = new PdfRendererBuilder();
 				builder.withHtmlContent(html, Generator.class.getResource("/root.htm").toExternalForm());
+				builder.useFastMode();
 				builder.toStream(os);
 				builder.run();
 
