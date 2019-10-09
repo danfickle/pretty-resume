@@ -24,7 +24,9 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonFactoryBuilder;
+import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 
@@ -59,7 +61,7 @@ public class Generator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Generator.class);
 	private static final SecureRandom RANDOM = new SecureRandom();
-	private static final ObjectMapper MAPPER = new ObjectMapper();
+	private static final ObjectMapper MAPPER = new ObjectMapper(createJsonFactory());
 	private static final TemplateEngine THYMELEAF = new TemplateEngine();
 	private static final Map<String, String> langs = new ConcurrentHashMap<>();
 	private static final Map<String, String> templates = new ConcurrentHashMap<>();
@@ -95,13 +97,19 @@ public class Generator {
 		}
 	}
 	
-	static {
-		MAPPER.enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES);
-		MAPPER.enable(JsonParser.Feature.ALLOW_SINGLE_QUOTES);
-		MAPPER.enable(JsonParser.Feature.ALLOW_MISSING_VALUES);
-		MAPPER.enable(JsonParser.Feature.ALLOW_COMMENTS);
-		MAPPER.enable(JsonParser.Feature.ALLOW_TRAILING_COMMA);
-		
+	private static JsonFactory createJsonFactory() {
+		JsonFactoryBuilder builder = new JsonFactoryBuilder();
+	
+		builder.enable(JsonReadFeature.ALLOW_MISSING_VALUES);
+		builder.enable(JsonReadFeature.ALLOW_TRAILING_COMMA);
+		builder.enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES);
+		builder.enable(JsonReadFeature.ALLOW_SINGLE_QUOTES);
+		builder.enable(JsonReadFeature.ALLOW_JAVA_COMMENTS);
+
+		return builder.build();
+	}
+
+    static {	
 		Stream.of(Editor.values()).forEach(Generator::loadEditorPage);
 		Stream.of(Languages.values()).forEach(Generator::loadLang);
 		Stream.of(Template.values()).forEach(Generator::loadTemplate);
